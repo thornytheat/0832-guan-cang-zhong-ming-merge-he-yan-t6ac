@@ -12,6 +12,8 @@ docker compose up --build -d --wait
 
 打开 <http://localhost:18331>。页面预览带异常样例。选中阶段查看计算证据，选择可签发样例并执行批次，然后提交复核意见。
 
+跨组互认签发台位于 <http://localhost:18331/recognition>：登记分组、权威编号与互认关系，查看权威冲突沿互认链的传播与各组签发状态；撤销互认的晚到更正入账后自动重算，冲突解除且核验合格的组恢复待签。规则见 [docs/DEPTH.md](docs/DEPTH.md)。
+
 ## 核验
 
 ```sh

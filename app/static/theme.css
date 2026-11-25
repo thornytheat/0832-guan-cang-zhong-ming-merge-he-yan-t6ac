@@ -69,3 +69,20 @@ body.catalogue {margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 var
 .author-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(106px,1fr));gap:10px}.author-index{border:1px solid var(--accent);border-left:6px solid var(--accent);padding:12px;background:var(--soft)}.author-members{margin-top:5px;font:600 17px var(--font-num)}
 
 .chart-note{margin-top:9px;color:var(--muted);overflow-wrap:anywhere}
+
+/* 跨组互认签发台 */
+.catalogue .main-catalogue {grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);grid-template-areas:"g g" "cf ev";align-content:start}
+.catalogue #groups{grid-area:g}.catalogue #conflicts{grid-area:cf}.catalogue #events{grid-area:ev}
+.catalogue .badge[data-result="SUSPENDED"],.catalogue .badge[data-result="HELD"]{color:var(--fault)}
+.catalogue .muted{color:var(--muted)}
+.catalogue .conflict-card{border:1px solid var(--line);border-left:4px solid var(--fault);background:var(--soft);border-radius:var(--radius);padding:10px 12px;margin-bottom:10px}
+.catalogue .conflict-card h3{margin:0 0 6px;font-size:15px}
+.catalogue .conflict-card p{margin:3px 0;overflow-wrap:anywhere}
+.catalogue .conflict-card .tainted{color:var(--fault);font-weight:600}
+.catalogue .rec-form{border:1px solid var(--line);border-radius:var(--radius);padding:12px;margin-bottom:14px;background:var(--soft)}
+.catalogue .rec-form h3{margin:0 0 8px;font-size:15px}
+.catalogue .rec-form label{display:block;margin-bottom:8px;font-size:.92em}
+.catalogue .rec-form input,.catalogue .rec-form select,.catalogue .rec-form textarea{width:100%;margin-top:3px;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:var(--radius);padding:6px 8px;font:inherit}
+.catalogue .grid-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 10px}
+.catalogue .rec-form button{margin-top:4px}
+@media(max-width:1110px){.catalogue .main-catalogue{grid-template-columns:minmax(0,1fr);grid-template-areas:"g" "cf" "ev"}}

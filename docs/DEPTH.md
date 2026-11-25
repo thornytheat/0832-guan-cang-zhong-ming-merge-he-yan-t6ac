@@ -13,6 +13,28 @@
 | M5 运行对账 | 对照输入、采信和隔离行 | `POST /api/stages/balance` | `app/modules/reconcile.py` | `tests/test_reconcile.py` |
 | M6 批次复核 | 执行批次并签发或暂缓 | `POST /api/runs、PATCH /api/runs/<id>` | `app/review/service.py` | `tests/test_review.py` |
 | M7 证据交付 | 下载复核清单 | `GET /api/runs/<id>/evidence` | `app/evidence/render.py` | `tests/test_evidence.py` |
+| M8 跨组互认签发 | 互认冲突传播、更正重算与分组签发 | `GET /recognition、/api/recognition/*` | `app/recognize/` | `tests/test_recognition_*.py` |
+
+## 跨组互认签发规则（M8）
+
+同一批馆藏开馆前签发时，作者记录在组间通过互认关系（`recognize` 事件）连接。规则：
+
+1. **权威冲突**：同一互认连通组件内出现两个不同的非零权威编号即冲突；权威编号 0 表示未确认，不参与判定。组内人数核验合格也不能抵消权威冲突。
+2. **冲突传播**：冲突沿互认边传播到第三组，组件内所有组标记 `SUSPENDED` 一并暂缓；与冲突组件无互认关联的合格组保持 `READY`，可以先签。
+3. **编号碰巧相同不传播**：不同组的本地作者编号相同但没有互认边时，各属独立组件，互不牵连，各自核验。
+4. **更正重算**：晚到的 `revoke`（撤销互认）或权威编号更正入账后整体重算；冲突解除且组内核验仍合格的组恢复 `READY`，可重新签发。撤销为终态，重放旧互认事件不会让其复活。
+5. **更正先入账**：`/api/recognition/submissions` 在单事务内先记更正再校验签发；受影响组的既有结论按受影响范围失效，携带旧 `revision` 的请求返回 `STALE_RECOGNITION`。事务原子，签发失败则更正一并回滚。
+6. **状态口径**：`READY` 可签、`SUSPENDED` 被冲突牵连暂缓、`HELD` 组内核验不合格（内部问题优先于牵连标记）。
+7. **工作台**：编目员在 `/recognition` 查看各组状态、冲突传播链与已签发结论，并登记事件、提交单组或同批签发。
+
+### 互认事件类型
+
+| kind | 字段 | 含义 |
+|---|---|---|
+| `group` | `group`、`headcount_ok` | 登记分组及组内人数核验结论 |
+| `authority` | `group`、`author`、`authority` | 登记本地作者的权威编号（0=未确认） |
+| `recognize` | `claim`、`group`、`author`、`peer_group`、`peer_author` | 建立跨组互认关系 |
+| `revoke` | `claim` | 撤销指定互认关系（终态） |
 
 ## 输入陷阱
 

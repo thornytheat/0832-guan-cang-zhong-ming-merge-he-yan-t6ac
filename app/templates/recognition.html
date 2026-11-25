@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="zh-CN" data-workbench="recognition">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>跨组互认签发台</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='theme.css') }}">
+  <script type="module" src="{{ url_for('static', filename='recognition.js') }}"></script>
+</head>
+<body class="catalogue">
+<div class="desk-catalogue">
+  <aside class="rail">
+    <a class="brand" href="/recognition" aria-label="互认签发台">认</a>
+    <a class="rail-link" href="/">馆藏重名核验</a>
+    <a class="rail-link" href="#groups">分组状态</a>
+    <a class="rail-link" href="#conflicts">冲突传播</a>
+    <a class="rail-link" href="#events">更正入账</a>
+  </aside>
+  <div class="work-catalogue">
+    <header class="mast topbar">
+      <h1>跨组互认签发台</h1>
+      <p class="role">图书馆编目员 · 开馆前批次签发</p>
+    </header>
+
+    <main class="grid main-catalogue">
+      <section class="panel results" id="groups" aria-labelledby="groups-title">
+        <div class="panel-head">
+          <h2 id="groups-title">各组签发状态</h2>
+          <span id="seq"></span>
+        </div>
+        <div class="scroll">
+          <table id="group-rows" aria-label="分组签发状态">
+            <thead><tr><th>分组</th><th>核验/签发状态</th><th>已签发结论</th><th>操作</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel inspection" id="conflicts" aria-labelledby="conflicts-title">
+        <h2 id="conflicts-title">互认权威冲突与传播链</h2>
+        <div id="conflict-list"><p class="muted">暂无权威冲突。</p></div>
+      </section>
+
+      <section class="panel archive" id="events" aria-labelledby="events-title">
+        <h2 id="events-title">更正入账与分组签发</h2>
+
+        <form id="event-form" class="rec-form">
+          <h3>登记事件</h3>
+          <label>事件类型
+            <select id="event-kind">
+              <option value="group">分组登记</option>
+              <option value="authority">权威编号</option>
+              <option value="recognize">互认关系</option>
+              <option value="revoke">撤销互认</option>
+            </select>
+          </label>
+          <div class="grid-fields">
+            <label data-when="group authority recognize">分组 <input id="f-group" placeholder="G1"></label>
+            <label data-when="group">人数核验
+              <select id="f-headcount"><option value="true">合格</option><option value="false">不合格</option></select>
+            </label>
+            <label data-when="authority recognize">本地作者 <input id="f-author" placeholder="a1"></label>
+            <label data-when="authority">权威编号 <input id="f-authority" type="number" min="0" placeholder="100，0=未确认"></label>
+            <label data-when="recognize">对端分组 <input id="f-peer-group" placeholder="G2"></label>
+            <label data-when="recognize">对端作者 <input id="f-peer-author" placeholder="b1"></label>
+            <label data-when="recognize revoke">互认编号 <input id="f-claim" placeholder="C12"></label>
+          </div>
+          <button type="submit" class="action">入账更正</button>
+        </form>
+
+        <form id="signoff-form" class="rec-form">
+          <h3>分组签发</h3>
+          <label>分组 <input id="s-group" placeholder="G1" required></label>
+          <label>结论版本 revision <input id="s-revision" type="number" min="0" value="0" required></label>
+          <label>签发意见 <textarea id="s-note" minlength="3" maxlength="200" required placeholder="3 至 200 字"></textarea></label>
+          <button type="submit" class="action">提交签发</button>
+        </form>
+
+        <form id="combo-form" class="rec-form">
+          <h3>同批：更正 + 签发</h3>
+          <p class="muted">更正先入账重算，受影响组的旧结论随即失去签发资格。</p>
+          <label>更正事件（JSON 数组）
+            <textarea id="c-events" rows="4" placeholder='[{"kind":"revoke","claim":"C12"}]'></textarea>
+          </label>
+          <label>签发请求（JSON 数组）
+            <textarea id="c-signoffs" rows="3" placeholder='[{"group":"G1","revision":0,"note":"复核合格"}]'></textarea>
+          </label>
+          <button type="submit" class="action">同批提交</button>
+        </form>
+      </section>
+    </main>
+
+    <footer class="statusbar">
+      <span id="notice" role="status" aria-live="polite">正在载入互认登记册</span>
+    </footer>
+  </div>
+</div>
+</body>
+</html>
